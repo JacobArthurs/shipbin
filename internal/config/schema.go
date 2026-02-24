@@ -5,34 +5,21 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
-
-	"github.com/jacobarthurs/shipbin/internal/platforms"
 )
 
-type Target string
-
 const (
-	TargetAll  Target = "all"
-	TargetNpm  Target = "npm"
-	TargetPyPI Target = "pypi"
+	TargetAll  string = "all"
+	TargetNpm  string = "npm"
+	TargetPyPI string = "pypi"
 )
 
 type Config struct {
-	Binary    string
-	Dist      string
-	Version   string
-	Platforms []platforms.Mapping
-	Npm       NpmConfig
-	PyPI      PyPIConfig
-	Target    Target
-}
-
-type NpmConfig struct {
-	Org string
-}
-
-type PyPIConfig struct {
-	Package string
+	Name        string
+	Version     string
+	Artifacts   []Artifact
+	NpmOrg      string
+	PyPIPackage string
+	Target      string
 }
 
 func ResolveVersion(explicit string) (string, error) {
@@ -57,8 +44,8 @@ func ResolveVersion(explicit string) (string, error) {
 	return version, nil
 }
 
-func ResolveTarget(raw string) (Target, error) {
-	switch Target(strings.ToLower(raw)) {
+func ResolveTarget(raw string) (string, error) {
+	switch strings.ToLower(raw) {
 	case TargetAll:
 		return TargetAll, nil
 	case TargetNpm:
@@ -73,27 +60,14 @@ func ResolveTarget(raw string) (Target, error) {
 func (c *Config) Validate() error {
 	var errs []error
 
-	if c.Binary == "" {
-		errs = append(errs, fmt.Errorf("--binary is required"))
-	}
-	if c.Version == "" {
-		errs = append(errs, fmt.Errorf("version could not be resolved: provide --version or run from a tagged commit"))
-	}
-	if c.Dist == "" {
-		errs = append(errs, fmt.Errorf("--dist is required"))
-	}
-	if len(c.Platforms) == 0 {
-		errs = append(errs, fmt.Errorf("no platforms configured"))
-	}
-
 	if c.Target == TargetAll || c.Target == TargetNpm {
-		if c.Npm.Org == "" {
+		if c.NpmOrg == "" {
 			errs = append(errs, fmt.Errorf("--npm-org is required when target is npm or all"))
 		}
 	}
 
 	if c.Target == TargetAll || c.Target == TargetPyPI {
-		if c.PyPI.Package == "" {
+		if c.PyPIPackage == "" {
 			errs = append(errs, fmt.Errorf("--pypi-package is required when target is pypi or all"))
 		}
 	}
