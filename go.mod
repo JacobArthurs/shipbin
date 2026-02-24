@@ -1,4 +1,4 @@
-module godist
+module github.com/jacobarthurs/godist
 
 go 1.25.6
 

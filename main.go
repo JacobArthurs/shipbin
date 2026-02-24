@@ -3,7 +3,7 @@ Copyright © 2026 JACOB ARTHURS
 */
 package main
 
-import "godist/cmd"
+import "github.com/jacobarthurs/godist/cmd"
 
 func main() {
 	cmd.Execute()
