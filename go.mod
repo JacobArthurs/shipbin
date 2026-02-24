@@ -1,4 +1,4 @@
-module github.com/jacobarthurs/godist
+module github.com/jacobarthurs/shipbin
 
 go 1.25.6
 

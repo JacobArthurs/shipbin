@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/jacobarthurs/godist/internal/platforms"
+	"github.com/jacobarthurs/shipbin/internal/platforms"
 )
 
 type Target string

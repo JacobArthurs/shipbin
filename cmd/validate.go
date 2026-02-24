@@ -12,7 +12,7 @@ import (
 var validateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate configuration and verify binaries exist before publishing",
-	Long: `Validates that godist has everything it needs to publish successfully.
+	Long: `Validates that shipbin has everything it needs to publish successfully.
 
 Checks that all platform binaries exist in the dist/ directory,
 required credentials are present in the environment, and all

@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jacobarthurs/godist/internal/config"
-	"github.com/jacobarthurs/godist/internal/platforms"
+	"github.com/jacobarthurs/shipbin/internal/config"
+	"github.com/jacobarthurs/shipbin/internal/platforms"
 	"github.com/spf13/cobra"
 	"golang.org/x/mod/modfile"
 )
@@ -24,9 +24,9 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "godist",
+	Use:   "shipbin",
 	Short: "Publish Go binaries to npm and PyPI from GitHub Actions",
-	Long: `godist publishes pre-built Go binaries to npm and PyPI.
+	Long: `shipbin publishes pre-built Go binaries to npm and PyPI.
 
 It reads binaries from your dist/ directory (GoReleaser output),
 assembles platform-specific npm packages and PyPI wheels, and

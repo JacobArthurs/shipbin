@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/jacobarthurs/godist/internal/platforms"
+	"github.com/jacobarthurs/shipbin/internal/platforms"
 )
 
 type BinaryPath struct {
