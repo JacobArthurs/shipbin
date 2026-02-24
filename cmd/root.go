@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/jacobarthurs/shipbin/internal/config"
+	"github.com/jacobarthurs/shipbin/internal/publisher"
 	"github.com/spf13/cobra"
 )
 
@@ -39,10 +40,7 @@ provided artifacts, then publishes them concurrently.`,
 			return nil
 		}
 
-		// TODO: implement publisher.Publish
-		//return publisher.Publish(cfg)
-		fmt.Println("publishing...")
-		return nil
+		return publisher.Publish(cfg)
 	},
 }
 
