@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"slices"
 	"strings"
 )
 
@@ -19,7 +20,7 @@ type Config struct {
 	Artifacts   []Artifact
 	NpmOrg      string
 	PyPIPackage string
-	Target      string
+	Targets     []string
 }
 
 func ResolveVersion(explicit string) (string, error) {
@@ -44,29 +45,29 @@ func ResolveVersion(explicit string) (string, error) {
 	return version, nil
 }
 
-func ResolveTarget(raw string) (string, error) {
+func ResolveTargets(raw string) ([]string, error) {
 	switch strings.ToLower(raw) {
 	case TargetAll:
-		return TargetAll, nil
+		return []string{TargetNpm, TargetPyPI}, nil
 	case TargetNpm:
-		return TargetNpm, nil
+		return []string{TargetNpm}, nil
 	case TargetPyPI:
-		return TargetPyPI, nil
+		return []string{TargetPyPI}, nil
 	default:
-		return "", fmt.Errorf("invalid --target %q: must be one of: all, npm, pypi", raw)
+		return nil, fmt.Errorf("invalid --target %q: must be one of: all, npm, pypi", raw)
 	}
 }
 
 func (c *Config) Validate() error {
 	var errs []error
 
-	if c.Target == TargetAll || c.Target == TargetNpm {
+	if slices.Contains(c.Targets, TargetNpm) {
 		if c.NpmOrg == "" {
 			errs = append(errs, fmt.Errorf("--npm-org is required when target is npm or all"))
 		}
 	}
 
-	if c.Target == TargetAll || c.Target == TargetPyPI {
+	if slices.Contains(c.Targets, TargetPyPI) {
 		if c.PyPIPackage == "" {
 			errs = append(errs, fmt.Errorf("--pypi-package is required when target is pypi or all"))
 		}

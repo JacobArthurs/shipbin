@@ -50,7 +50,7 @@ func buildConfig() (*config.Config, error) {
 		return nil, err
 	}
 
-	target, err := config.ResolveTarget(flagTarget)
+	targets, err := config.ResolveTargets(flagTarget)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func buildConfig() (*config.Config, error) {
 		Artifacts:   artifacts,
 		NpmOrg:      flagNpmOrg,
 		PyPIPackage: flagPyPIPackage,
-		Target:      target,
+		Targets:     targets,
 	}
 
 	if err := cfg.Validate(); err != nil {
