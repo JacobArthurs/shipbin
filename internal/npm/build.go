@@ -6,8 +6,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-
-	"github.com/jacobarthurs/shipbin/internal/config"
 )
 
 type packageJSON struct {
@@ -27,7 +25,7 @@ type builtPackage struct {
 	name string
 }
 
-func buildPlatformPackages(cfg *config.Config) ([]builtPackage, func(), error) {
+func buildPlatformPackages(cfg *Config) ([]builtPackage, func(), error) {
 	var packages []builtPackage
 	var dirs []string
 
@@ -38,7 +36,7 @@ func buildPlatformPackages(cfg *config.Config) ([]builtPackage, func(), error) {
 	}
 
 	for _, a := range cfg.Artifacts {
-		pkgName := fmt.Sprintf("@%s/%s-%s", cfg.NpmOrg, cfg.Name, a.Mapping.Npm.PackageSuffix)
+		pkgName := fmt.Sprintf("@%s/%s-%s", cfg.Org, cfg.Name, a.Mapping.Npm.PackageSuffix)
 
 		dir, err := os.MkdirTemp("", "shipbin-npm-*")
 		if err != nil {
@@ -83,7 +81,7 @@ func buildPlatformPackages(cfg *config.Config) ([]builtPackage, func(), error) {
 	return packages, cleanup, nil
 }
 
-func buildRootPackage(cfg *config.Config) (builtPackage, func(), error) {
+func buildRootPackage(cfg *Config) (builtPackage, func(), error) {
 	rootName := cfg.Name
 
 	dir, err := os.MkdirTemp("", "shipbin-npm-root-*")
@@ -105,7 +103,7 @@ func buildRootPackage(cfg *config.Config) (builtPackage, func(), error) {
 
 	optDeps := make(map[string]string, len(cfg.Artifacts))
 	for _, a := range cfg.Artifacts {
-		pkgName := fmt.Sprintf("@%s/%s-%s", cfg.NpmOrg, cfg.Name, a.Mapping.Npm.PackageSuffix)
+		pkgName := fmt.Sprintf("@%s/%s-%s", cfg.Org, cfg.Name, a.Mapping.Npm.PackageSuffix)
 		optDeps[pkgName] = cfg.Version
 	}
 
@@ -123,8 +121,8 @@ func buildRootPackage(cfg *config.Config) (builtPackage, func(), error) {
 		return builtPackage{}, nil, fmt.Errorf("failed to write root package.json: %w", err)
 	}
 
-	if cfg.NpmReadme != "" {
-		if err := copyFile(cfg.NpmReadme, filepath.Join(dir, "README.md"), 0644); err != nil {
+	if cfg.Readme != "" {
+		if err := copyFile(cfg.Readme, filepath.Join(dir, "README.md"), 0644); err != nil {
 			cleanup()
 			return builtPackage{}, nil, fmt.Errorf("failed to copy README: %w", err)
 		}

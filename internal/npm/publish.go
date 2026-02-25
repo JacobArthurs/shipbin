@@ -6,8 +6,6 @@ import (
 	"os/exec"
 	"strings"
 	"time"
-
-	"github.com/jacobarthurs/shipbin/internal/config"
 )
 
 const (
@@ -15,7 +13,7 @@ const (
 	registryPollTimeout  = 2 * time.Minute
 )
 
-func Publish(cfg *config.Config) error {
+func Publish(cfg *Config) error {
 	verb := "publishing"
 	if cfg.DryRun {
 		verb = "would publish"
@@ -31,7 +29,7 @@ func Publish(cfg *config.Config) error {
 
 	for _, pkg := range platforms {
 		fmt.Printf("npm: %s %s...\n", verb, pkg.name)
-		if err := npmPublish(pkg.dir, cfg.NpmTag, cfg.NpmProvenance, cfg.DryRun); err != nil {
+		if err := npmPublish(pkg.dir, cfg.Tag, cfg.Provenance, cfg.DryRun); err != nil {
 			return fmt.Errorf("npm: failed to publish %s: %w", pkg.name, err)
 		}
 	}
@@ -52,7 +50,7 @@ func Publish(cfg *config.Config) error {
 	defer rootCleanup()
 
 	fmt.Printf("npm: %s %s...\n", verb, root.name)
-	if err := npmPublish(root.dir, cfg.NpmTag, cfg.NpmProvenance, cfg.DryRun); err != nil {
+	if err := npmPublish(root.dir, cfg.Tag, cfg.Provenance, cfg.DryRun); err != nil {
 		return fmt.Errorf("npm: failed to publish root package %s: %w", root.name, err)
 	}
 

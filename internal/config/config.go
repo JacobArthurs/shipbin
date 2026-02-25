@@ -4,11 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
+	"regexp"
 	"runtime"
 	"strings"
 
 	"github.com/jacobarthurs/shipbin/internal/platforms"
 )
+
+var semverRe = regexp.MustCompile(`^\d+\.\d+\.\d+(-[a-zA-Z0-9][a-zA-Z0-9.-]*)?$`)
 
 type Artifact struct {
 	Platform platforms.Platform
@@ -66,4 +70,34 @@ func ParseArtifacts(artifacts []string) ([]Artifact, error) {
 	}
 
 	return results, errors.Join(errs...)
+}
+
+func ResolveVersion(explicit string) (string, error) {
+	if explicit != "" {
+		return normalizeVersion(explicit)
+	}
+
+	cmd := exec.Command("git", "describe", "--tags", "--exact-match")
+	out, err := cmd.Output()
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return "", fmt.Errorf("--version not provided and no exact git tag found: %s", strings.TrimSpace(string(exitErr.Stderr)))
+		}
+		return "", err
+	}
+
+	version := strings.TrimSpace(string(out))
+	if version == "" {
+		return "", fmt.Errorf("--version not provided and git describe returned empty output")
+	}
+
+	return normalizeVersion(version)
+}
+
+func normalizeVersion(v string) (string, error) {
+	v = strings.TrimPrefix(v, "v")
+	if !semverRe.MatchString(v) {
+		return "", fmt.Errorf("invalid version %q: must be valid semver (e.g. 1.2.3, 1.2.3-beta.1)", v)
+	}
+	return v, nil
 }
