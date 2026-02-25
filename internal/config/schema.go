@@ -15,12 +15,17 @@ const (
 )
 
 type Config struct {
-	Name        string
-	Version     string
-	Artifacts   []Artifact
-	NpmOrg      string
-	PyPIPackage string
-	Targets     []string
+	Name          string
+	Version       string
+	License       string
+	Artifacts     []Artifact
+	NpmOrg        string
+	NpmTag        string
+	NpmProvenance bool
+	NpmReadme     string
+	PyPIPackage   string
+	Targets       []string
+	DryRun        bool
 }
 
 func ResolveVersion(explicit string) (string, error) {

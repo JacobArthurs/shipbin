@@ -4,7 +4,6 @@ Copyright © 2026 JACOB ARTHURS
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/jacobarthurs/shipbin/internal/config"
@@ -13,13 +12,17 @@ import (
 )
 
 var (
-	flagName        string
-	flagArtifacts   []string
-	flagVersion     string
-	flagNpmOrg      string
-	flagPyPIPackage string
-	flagTarget      string
-	flagDryRun      bool
+	flagName          string
+	flagArtifacts     []string
+	flagVersion       string
+	flagLicense       string
+	flagNpmOrg        string
+	flagNpmTag        string
+	flagNpmProvenance bool
+	flagNpmReadme     string
+	flagPyPIPackage   string
+	flagTarget        string
+	flagDryRun        bool
 )
 
 var rootCmd = &cobra.Command{
@@ -33,11 +36,6 @@ provided artifacts, then publishes them concurrently.`,
 		cfg, err := buildConfig()
 		if err != nil {
 			return err
-		}
-
-		if flagDryRun {
-			fmt.Printf("Dry run: would publish version %s with config:\n%+v\n", cfg.Version, cfg)
-			return nil
 		}
 
 		return publisher.Publish(cfg)
@@ -61,12 +59,17 @@ func buildConfig() (*config.Config, error) {
 	}
 
 	cfg := &config.Config{
-		Name:        flagName,
-		Version:     version,
-		Artifacts:   artifacts,
-		NpmOrg:      flagNpmOrg,
-		PyPIPackage: flagPyPIPackage,
-		Targets:     targets,
+		Name:          flagName,
+		Version:       version,
+		License:       flagLicense,
+		Artifacts:     artifacts,
+		NpmOrg:        flagNpmOrg,
+		NpmTag:        flagNpmTag,
+		NpmProvenance: flagNpmProvenance,
+		NpmReadme:     flagNpmReadme,
+		PyPIPackage:   flagPyPIPackage,
+		Targets:       targets,
+		DryRun:        flagDryRun,
 	}
 
 	if err := cfg.Validate(); err != nil {
@@ -80,7 +83,11 @@ func init() {
 	rootCmd.Flags().StringVar(&flagName, "name", "", "binary name")
 	rootCmd.Flags().StringArrayVar(&flagArtifacts, "artifact", nil, "os/arch:path mapping (repeatable)")
 	rootCmd.Flags().StringVar(&flagVersion, "version", "", "release version (defaults to current git tag)")
+	rootCmd.Flags().StringVar(&flagLicense, "license", "", "license identifier (e.g. MIT, Apache-2.0)")
 	rootCmd.Flags().StringVar(&flagNpmOrg, "npm-org", "", "npm org scope (e.g. 'myorg' produces @myorg/linux-x64)")
+	rootCmd.Flags().StringVar(&flagNpmTag, "npm-tag", "latest", "npm dist-tag to publish under (e.g. latest, next, beta)")
+	rootCmd.Flags().BoolVar(&flagNpmProvenance, "npm-provenance", true, "publish with npm provenance attestation (requires CI environment)")
+	rootCmd.Flags().StringVar(&flagNpmReadme, "npm-readme", "", "path to README to include in the root npm package (optional)")
 	rootCmd.Flags().StringVar(&flagPyPIPackage, "pypi-package", "", "PyPI package name")
 	rootCmd.Flags().StringVar(&flagTarget, "target", "all", "publish target: all, npm, or pypi")
 	rootCmd.Flags().BoolVar(&flagDryRun, "dry-run", false, "print what would be published without publishing")

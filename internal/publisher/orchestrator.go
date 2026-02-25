@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/jacobarthurs/shipbin/internal/config"
+	"github.com/jacobarthurs/shipbin/internal/npm"
 )
 
 func Publish(cfg *config.Config) error {
@@ -14,8 +15,7 @@ func Publish(cfg *config.Config) error {
 
 	if slices.Contains(cfg.Targets, config.TargetNpm) {
 		wg.Go(func() {
-			// TODO: implement npm.Publish
-			// errs[0] = npm.Publish(cfg)
+			errs[0] = npm.Publish(cfg)
 		})
 	}
 
