@@ -110,7 +110,7 @@ func buildRootPackage(cfg *Config) (builtPackage, func(), error) {
 	pkg := packageJSON{
 		Name:         rootName,
 		Version:      cfg.Version,
-		Description:  fmt.Sprintf("Install %s — native binary distributed via npm", cfg.Name),
+		Description:  cfg.Summary,
 		License:      cfg.License,
 		Files:        []string{"bin"},
 		Bin:          map[string]string{cfg.Name: fmt.Sprintf("bin/%s", cfg.Name)},

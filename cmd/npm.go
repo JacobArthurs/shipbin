@@ -46,6 +46,7 @@ func buildNpmConfig() (*npm.Config, error) {
 	cfg := &npm.Config{
 		Name:       flagName,
 		Version:    version,
+		Summary:    flagSummary,
 		License:    flagLicense,
 		Artifacts:  artifacts,
 		DryRun:     flagDryRun,
