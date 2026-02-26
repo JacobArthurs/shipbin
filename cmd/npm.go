@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	flagOrg string
-	flagTag string
+	flagOrg        string
+	flagTag        string
+	flagProvenance bool
 )
 
 var npmCmd = &cobra.Command{
@@ -62,6 +63,7 @@ func buildNpmConfig() (*npm.Config, error) {
 func init() {
 	npmCmd.Flags().StringVar(&flagOrg, "org", "", "npm org scope (e.g. 'myorg' produces @myorg/name-linux-x64)")
 	npmCmd.Flags().StringVar(&flagTag, "tag", "latest", "dist-tag to publish under (e.g. latest, next, beta)")
+	npmCmd.Flags().BoolVar(&flagProvenance, "provenance", true, "publish with provenance attestation (requires CI environment)")
 
 	npmCmd.MarkFlagRequired("org")
 }

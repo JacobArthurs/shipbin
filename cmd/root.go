@@ -10,14 +10,13 @@ import (
 )
 
 var (
-	flagName       string
-	flagArtifacts  []string
-	flagVersion    string
-	flagSummary    string
-	flagLicense    string
-	flagDryRun     bool
-	flagProvenance bool
-	flagReadme     string
+	flagName      string
+	flagArtifacts []string
+	flagVersion   string
+	flagSummary   string
+	flagLicense   string
+	flagDryRun    bool
+	flagReadme    string
 )
 
 var rootCmd = &cobra.Command{
@@ -37,7 +36,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&flagSummary, "summary", "", "short description of the package (optional)")
 	rootCmd.PersistentFlags().StringVar(&flagLicense, "license", "", "license identifier (e.g. MIT, Apache-2.0)")
 	rootCmd.PersistentFlags().BoolVar(&flagDryRun, "dry-run", false, "print what would be published without publishing")
-	rootCmd.PersistentFlags().BoolVar(&flagProvenance, "provenance", true, "publish with provenance attestation (requires CI environment)")
 	rootCmd.PersistentFlags().StringVar(&flagReadme, "readme", "", "path to README to include in the published package (optional)")
 
 	rootCmd.MarkPersistentFlagRequired("name")
