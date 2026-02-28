@@ -65,5 +65,7 @@ func init() {
 	npmCmd.Flags().StringVar(&flagTag, "tag", "latest", "dist-tag to publish under (e.g. latest, next, beta)")
 	npmCmd.Flags().BoolVar(&flagProvenance, "provenance", true, "publish with provenance attestation (requires CI environment)")
 
-	npmCmd.MarkFlagRequired("org")
+	if err := npmCmd.MarkFlagRequired("org"); err != nil {
+		panic(err)
+	}
 }

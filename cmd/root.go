@@ -38,8 +38,12 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&flagDryRun, "dry-run", false, "print what would be published without publishing")
 	rootCmd.PersistentFlags().StringVar(&flagReadme, "readme", "", "path to README to include in the published package (optional)")
 
-	rootCmd.MarkPersistentFlagRequired("name")
-	rootCmd.MarkPersistentFlagRequired("artifact")
+	if err := rootCmd.MarkPersistentFlagRequired("name"); err != nil {
+		panic(err)
+	}
+	if err := rootCmd.MarkPersistentFlagRequired("artifact"); err != nil {
+		panic(err)
+	}
 
 	rootCmd.AddCommand(npmCmd)
 	rootCmd.AddCommand(pypiCmd)

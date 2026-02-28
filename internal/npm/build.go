@@ -31,7 +31,7 @@ func buildPlatformPackages(cfg *Config) ([]builtPackage, func(), error) {
 
 	cleanup := func() {
 		for _, d := range dirs {
-			os.RemoveAll(d)
+			_ = os.RemoveAll(d)
 		}
 	}
 
@@ -88,7 +88,7 @@ func buildRootPackage(cfg *Config) (builtPackage, func(), error) {
 	if err != nil {
 		return builtPackage{}, nil, fmt.Errorf("failed to create temp dir for root package: %w", err)
 	}
-	cleanup := func() { os.RemoveAll(dir) }
+	cleanup := func() { _ = os.RemoveAll(dir) }
 
 	binDir := filepath.Join(dir, "bin")
 	if err := os.MkdirAll(binDir, 0755); err != nil {
@@ -136,13 +136,13 @@ func copyFile(src, dst string, mode os.FileMode) error {
 	if err != nil {
 		return err
 	}
-	defer in.Close()
+	defer func() { _ = in.Close() }()
 
 	out, err := os.OpenFile(dst, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, mode)
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer func() { _ = out.Close() }()
 
 	if _, err = io.Copy(out, in); err != nil {
 		return err
