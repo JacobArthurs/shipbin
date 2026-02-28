@@ -96,7 +96,7 @@ func buildRootPackage(cfg *Config) (builtPackage, func(), error) {
 		return builtPackage{}, nil, fmt.Errorf("failed to create bin dir for root package: %w", err)
 	}
 	wrapperPath := filepath.Join(binDir, cfg.Name)
-	if err := os.WriteFile(wrapperPath, []byte(wrapperScript(cfg.Name)), 0755); err != nil {
+	if err := os.WriteFile(wrapperPath, []byte(wrapperScript(cfg.Name, cfg.Org)), 0755); err != nil {
 		cleanup()
 		return builtPackage{}, nil, fmt.Errorf("failed to write wrapper script: %w", err)
 	}
