@@ -108,9 +108,25 @@ func uploadWheel(w wheelFile, token string) error {
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		raw, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("unexpected status %d: %s", resp.StatusCode, string(raw))
+		return fmt.Errorf("%s", pypiError(resp.StatusCode))
 	}
 
 	return nil
+}
+
+func pypiError(status int) string {
+	switch status {
+	case http.StatusUnauthorized:
+		return "not authenticated: ensure your API token is valid"
+	case http.StatusForbidden:
+		return "permission denied: the package name may be taken or your token lacks write access"
+	case http.StatusConflict:
+		return "version already exists: this version has already been published"
+	case http.StatusRequestEntityTooLarge:
+		return "file too large: the wheel exceeds PyPI's size limit"
+	case http.StatusBadRequest:
+		return "invalid package: check your metadata and version format"
+	default:
+		return fmt.Sprintf("unexpected status %d from PyPI", status)
+	}
 }

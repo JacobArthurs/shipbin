@@ -71,9 +71,36 @@ func npmPublish(dir, tag string, provenance, dryRun bool) error {
 	cmd.Dir = dir
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("%w\n%s", err, string(out))
+		return fmt.Errorf("%s", npmError(out))
 	}
 	return nil
+}
+
+func npmError(out []byte) string {
+	outStr := string(out)
+	for line := range strings.SplitSeq(outStr, "\n") {
+		line = strings.TrimSpace(line)
+		if !strings.HasPrefix(line, "npm ERR! code ") {
+			continue
+		}
+		switch strings.TrimPrefix(line, "npm ERR! code ") {
+		case "EOTP":
+			return "2FA is blocking publish: generate and use a token with 2FA disabled"
+		case "ENEEDAUTH", "E401":
+			return "not authenticated: generate a token with npm and ensure it's configured correctly"
+		case "E403":
+			return "permission denied: ensure the token has write access to this package or org"
+		case "E409", "EPUBLISHCONFLICT":
+			return "version already exists: this version has already been published"
+		case "ENOTFOUND", "ETIMEDOUT", "ECONNREFUSED":
+			return "network error: unable to reach the npm registry, check your connection"
+		case "EUSAGE":
+			if strings.Contains(outStr, "provenance") {
+				return "provenance is not supported outside of CI: use --provenance=false when publishing locally"
+			}
+		}
+	}
+	return "publish failed: " + strings.TrimSpace(outStr)
 }
 
 func pollUntilVisible(pkgName, version string) error {
