@@ -5,8 +5,8 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
-	"hash/crc32"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"os"
 	"regexp"
@@ -40,7 +40,7 @@ type wheelFile struct {
 }
 
 func buildWheel(cfg *Config, a config.Artifact) (wheelFile, error) {
-	name := strings.NewReplacer("-", "_", ".", "_").Replace(cfg.PyPIPackage)
+	name := strings.NewReplacer("-", "_", ".", "_").Replace(cfg.Name)
 	version, err := toPyPIVersion(cfg.Version)
 	if err != nil {
 		return wheelFile{}, err
@@ -67,7 +67,7 @@ func buildWheel(cfg *Config, a config.Artifact) (wheelFile, error) {
 		return wheelFile{}, err
 	}
 
-	shimData, err := renderShim(cfg.Name, cfg.PyPIPackage)
+	shimData, err := renderShim(cfg.Name)
 	if err != nil {
 		return wheelFile{}, fmt.Errorf("failed to render shim: %w", err)
 	}
@@ -194,7 +194,6 @@ Root-Is-Purelib: false
 Tag: py3-none-%s
 `, platformTag)
 }
-
 
 func (w wheelFile) reader() io.Reader {
 	return bytes.NewReader(w.data)

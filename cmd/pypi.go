@@ -9,10 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	flagPyPIPackage string
-)
-
 var pypiCmd = &cobra.Command{
 	Use:   "pypi",
 	Short: "Publish binaries to PyPI",
@@ -42,21 +38,17 @@ func buildPypiConfig() (*pypi.Config, error) {
 	}
 
 	cfg := &pypi.Config{
-		Name:        flagName,
-		Version:     version,
-		PyPIPackage: flagPyPIPackage,
-		Artifacts:   artifacts,
-		Summary:     flagSummary,
-		License:     flagLicense,
-		Readme:      flagReadme,
-		DryRun:      flagDryRun,
+		Name:      flagName,
+		Version:   version,
+		Artifacts: artifacts,
+		Summary:   flagSummary,
+		License:   flagLicense,
+		Readme:    flagReadme,
+		DryRun:    flagDryRun,
 	}
 
 	return cfg, nil
 }
 
 func init() {
-	pypiCmd.Flags().StringVar(&flagPyPIPackage, "package", "", "PyPI package name (e.g. myapp)")
-
-	pypiCmd.MarkFlagRequired("package")
 }

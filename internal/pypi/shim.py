@@ -17,7 +17,7 @@ def main():
     if not os.path.isfile(binary_path):
         print(
             f"__BIN_NAME__: binary not found at {binary_path}\n"
-            f"try reinstalling: pip install __PKG_NAME__",
+            f"try reinstalling: pip install __BIN_NAME__",
             file=sys.stderr,
         )
         sys.exit(1)
