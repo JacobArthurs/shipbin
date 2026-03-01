@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-const pypiUploadURL = "https://upload.pypi.org/legacy/"
+var pypiUploadURL = "https://upload.pypi.org/legacy/"
 
 func Publish(cfg *Config) error {
 	verb := "publishing"
