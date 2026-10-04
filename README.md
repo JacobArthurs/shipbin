@@ -2,7 +2,6 @@
 
 [![GitHub Release](https://img.shields.io/github/v/release/JacobArthurs/shipbin)](https://github.com/JacobArthurs/shipbin/releases/latest)
 [![Go Reference](https://pkg.go.dev/badge/github.com/jacobarthurs/shipbin.svg)](https://pkg.go.dev/github.com/jacobarthurs/shipbin)
-[![Go Report Card](https://goreportcard.com/badge/github.com/jacobarthurs/shipbin)](https://goreportcard.com/report/github.com/jacobarthurs/shipbin)
 [![ci](https://img.shields.io/github/actions/workflow/status/JacobArthurs/shipbin/ci.yml?branch=main)](https://github.com/JacobArthurs/shipbin/actions/workflows/ci.yml)
 [![go version](https://img.shields.io/github/go-mod/go-version/JacobArthurs/shipbin)](./go.mod)
 [![License](https://img.shields.io/github/license/JacobArthurs/shipbin)](LICENSE)
