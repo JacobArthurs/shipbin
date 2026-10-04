@@ -10,8 +10,10 @@ import (
 
 const (
 	registryPollInterval = 5 * time.Second
-	registryPollTimeout  = 2 * time.Minute
+	registryPollTimeout  = 5 * time.Minute
 )
+
+var httpClient = &http.Client{Timeout: 10 * time.Second}
 
 func Publish(cfg *Config) error {
 	verb := "publishing"
@@ -28,6 +30,10 @@ func Publish(cfg *Config) error {
 	defer cleanup()
 
 	for _, pkg := range platforms {
+		if !cfg.DryRun && isPublished(pkg.name, cfg.Version) {
+			fmt.Printf("npm: %s@%s already published, skipping\n", pkg.name, cfg.Version)
+			continue
+		}
 		fmt.Printf("npm: %s %s...\n", verb, pkg.name)
 		if err := npmPublish(pkg.dir, cfg.Tag, cfg.Provenance, cfg.DryRun); err != nil {
 			return fmt.Errorf("npm: failed to publish %s: %w", pkg.name, err)
@@ -48,6 +54,12 @@ func Publish(cfg *Config) error {
 		return err
 	}
 	defer rootCleanup()
+
+	if !cfg.DryRun && isPublished(root.name, cfg.Version) {
+		fmt.Printf("npm: %s@%s already published, skipping\n", root.name, cfg.Version)
+		fmt.Println("npm: done")
+		return nil
+	}
 
 	fmt.Printf("npm: %s %s...\n", verb, root.name)
 	if err := npmPublish(root.dir, cfg.Tag, cfg.Provenance, cfg.DryRun); err != nil {
@@ -112,17 +124,21 @@ func npmError(out []byte) string {
 }
 
 func pollUntilVisible(pkgName, version string) error {
-
-	for url, deadline := fmt.Sprintf("https://registry.npmjs.org/%s/%s", pkgName, version), time.Now().Add(registryPollTimeout); time.Now().Before(deadline); {
-
-		if resp, err := http.Get(url); err == nil {
-			_ = resp.Body.Close()
-			if resp.StatusCode == http.StatusOK {
-				return nil
-			}
+	for deadline := time.Now().Add(registryPollTimeout); time.Now().Before(deadline); {
+		if isPublished(pkgName, version) {
+			return nil
 		}
 		time.Sleep(registryPollInterval)
 	}
 
 	return fmt.Errorf("package %s@%s not visible after %s", pkgName, version, registryPollTimeout)
+}
+
+func isPublished(pkgName, version string) bool {
+	resp, err := httpClient.Get(fmt.Sprintf("https://registry.npmjs.org/%s/%s", pkgName, version))
+	if err != nil {
+		return false
+	}
+	_ = resp.Body.Close()
+	return resp.StatusCode == http.StatusOK
 }
